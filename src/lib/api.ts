@@ -29,8 +29,8 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
 
   if (!response.ok) {
     const message =
-      body && typeof body === 'object' && 'message' in body && typeof body.message === 'string'
-        ? body.message
+      body && typeof body === 'object' && 'error' in body && typeof body.error === 'string'
+        ? body.error
         : response.statusText
     throw new ApiError(message, response.status, body)
   }
