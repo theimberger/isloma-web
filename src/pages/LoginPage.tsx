@@ -1,12 +1,32 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { ApiError, apiFetch } from '../lib/api'
+import { setToken } from '../lib/auth'
 
 function LoginPage() {
+  const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  function handleSubmit(event: React.FormEvent) {
+  async function handleSubmit(event: React.FormEvent) {
     event.preventDefault()
+    setError('')
+    setIsSubmitting(true)
+
+    try {
+      const { token } = await apiFetch<{ token: string }>('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ email, password }),
+      })
+      setToken(token)
+      navigate('/')
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Something went wrong. Please try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -35,7 +55,10 @@ function LoginPage() {
             onChange={(event) => setPassword(event.target.value)}
           />
         </div>
-        <button type="submit">Log in</button>
+        {error && <p role="alert">{error}</p>}
+        <button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? 'Logging in…' : 'Log in'}
+        </button>
       </form>
       <p>
         Don't have an account? <Link to="/signup">Sign up</Link>

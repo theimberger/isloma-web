@@ -7,7 +7,7 @@ function App() {
     <Routes>
       <Route path="/" element={<h1>isloma-web</h1>} />
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/signup" element={<SignUpPage />} />
+      <Route path="/register" element={<SignUpPage />} />
     </Routes>
   )
 }
