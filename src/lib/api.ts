@@ -19,7 +19,6 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
   const response = await fetch(`${API_URL}${path}`, {
     ...options,
     headers: {
-      'Access-Control-Allow-Origin': API_URL,
       'Content-Type': 'application/json',
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...options.headers,
