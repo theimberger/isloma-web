@@ -1,20 +1,9 @@
-import { Link } from 'react-router-dom'
 import { Route, Routes } from 'react-router-dom'
 import RequireAuth from './components/RequireAuth'
 import AccountPage from './pages/AccountPage'
+import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import SignUpPage from './pages/SignUpPage'
-
-function HomePage() {
-  return (
-    <>
-      <h1>isloma-web</h1>
-      <p>
-        <Link to="/account">Account</Link>
-      </p>
-    </>
-  )
-}
 
 function App() {
   return (
