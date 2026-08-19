@@ -14,14 +14,29 @@ interface CongressPerson {
   imageUrl: string | null
 }
 
-function CongressPeople() {
-  const [congressPeople, setCongressPeople] = useState<CongressPerson[] | null>(null)
+interface Bill {
+  id: number
+  congress: number
+  type: string
+  number: string
+  title: string
+  latestActionDate: string | null
+  latestActionText: string | null
+}
+
+interface HomeData {
+  congressPeople: CongressPerson[]
+  bills: Bill[]
+}
+
+function HomeContent() {
+  const [data, setData] = useState<HomeData | null>(null)
   const [error, setError] = useState('')
   const [needsAddress, setNeedsAddress] = useState(false)
 
   useEffect(() => {
-    apiFetch<{ congressPeople: CongressPerson[] }>('/home')
-      .then((data) => setCongressPeople(data.congressPeople))
+    apiFetch<HomeData>('/home')
+      .then(setData)
       .catch((err) => {
         if (err instanceof ApiError && err.status === 404) {
           setNeedsAddress(true)
@@ -43,22 +58,45 @@ function CongressPeople() {
     return <p role="alert">{error}</p>
   }
 
-  if (!congressPeople) {
+  if (!data) {
     return <p>Loading…</p>
   }
 
   return (
-    <ul>
-      {congressPeople.map((person) => (
-        <li key={person.id}>
-          {person.imageUrl && (
-            <img src={person.imageUrl} alt="" width={48} height={48} />
-          )}
-          {person.firstName} {person.lastName} ({person.party}) —{' '}
-          {person.chamber === 'senate' ? 'Senate' : `House, District ${person.district}`}
-        </li>
-      ))}
-    </ul>
+    <>
+      <h2>Your representatives</h2>
+      <ul>
+        {data.congressPeople.map((person) => (
+          <li key={person.id}>
+            {person.imageUrl && (
+              <img src={person.imageUrl} alt="" width={48} height={48} />
+            )}
+            {person.firstName} {person.lastName} ({person.party}) —{' '}
+            {person.chamber === 'senate' ? 'Senate' : `House, District ${person.district}`}
+          </li>
+        ))}
+      </ul>
+
+      <h2>Recent bills</h2>
+      {data.bills.length === 0 ? (
+        <p>No recent bills.</p>
+      ) : (
+        <ul>
+          {data.bills.map((bill) => (
+            <li key={bill.id}>
+              {bill.type} {bill.number} ({bill.congress}th Congress) — {bill.title}
+              {bill.latestActionText && (
+                <>
+                  {' '}
+                  — {bill.latestActionText}
+                  {bill.latestActionDate && ` (${bill.latestActionDate})`}
+                </>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+    </>
   )
 }
 
@@ -71,12 +109,7 @@ function HomePage() {
       <p>
         <Link to="/account">Account</Link>
       </p>
-      {isLoggedIn && (
-        <>
-          <h2>Your representatives</h2>
-          <CongressPeople />
-        </>
-      )}
+      {isLoggedIn && <HomeContent />}
     </>
   )
 }
