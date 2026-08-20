@@ -28,7 +28,7 @@ function SignUpPage() {
         body: JSON.stringify({ email, password }),
       })
       setToken(token)
-      navigate('/')
+      navigate('/onboarding')
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Something went wrong. Please try again.')
     } finally {
